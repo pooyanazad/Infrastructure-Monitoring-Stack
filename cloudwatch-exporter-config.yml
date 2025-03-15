@@ -1,0 +1,43 @@
+region: eu-north-1
+metrics:
+  - aws_namespace: AWS/EC2
+    aws_metric_name: CPUUtilization
+    aws_dimensions: [InstanceId]
+    aws_statistics: [Average]
+    period_seconds: 60
+
+  - aws_namespace: AWS/EC2
+    aws_metric_name: NetworkIn
+    aws_dimensions: [InstanceId]
+    aws_statistics: [Average]
+    period_seconds: 60
+
+  - aws_namespace: AWS/EC2
+    aws_metric_name: NetworkOut
+    aws_dimensions: [InstanceId]
+    aws_statistics: [Average]
+    period_seconds: 60
+
+  - aws_namespace: AWS/ELB
+    aws_metric_name: RequestCount
+    aws_dimensions: [LoadBalancerName]
+    aws_statistics: [Sum]
+    period_seconds: 60
+
+  - aws_namespace: AWS/RDS
+    aws_metric_name: CPUUtilization
+    aws_dimensions: [DBInstanceIdentifier]
+    aws_statistics: [Average]
+    period_seconds: 60
+
+  - aws_namespace: AWS/RDS
+    aws_metric_name: FreeStorageSpace
+    aws_dimensions: [DBInstanceIdentifier]
+    aws_statistics: [Average]
+    period_seconds: 60
+
+  - aws_namespace: AWS/ECS
+    aws_metric_name: CPUUtilization
+    aws_dimensions: [ClusterName, ServiceName]
+    aws_statistics: [Average]
+    period_seconds: 60
