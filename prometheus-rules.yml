@@ -1,0 +1,78 @@
+groups:
+- name: kubernetes-apps
+  rules:
+  - alert: KubePodCrashLooping
+    expr: rate(kube_pod_container_status_restarts_total[15m]) * 60 * 5 > 0
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Pod {{$labels.namespace}}/{{$labels.pod}} is crash looping"
+      description: "Pod {{$labels.namespace}}/{{$labels.pod}} is crash looping (restarting {{$value}} times in 15 minutes)"
+
+  - alert: KubePodNotReady
+    expr: sum by (namespace, pod) (kube_pod_status_phase{phase=~"Pending|Unknown"}) > 0
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Pod {{$labels.namespace}}/{{$labels.pod}} not ready"
+      description: "Pod {{$labels.namespace}}/{{$labels.pod}} has been in a non-ready state for longer than 15 minutes"
+
+- name: node
+  rules:
+  - alert: HighCPUUsage
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU usage on {{$labels.instance}}"
+      description: "CPU usage is above 80% on node {{$labels.instance}} for 5 minutes"
+
+  - alert: HighMemoryUsage
+    expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High memory usage on {{$labels.instance}}"
+      description: "Memory usage is above 80% on node {{$labels.instance}} for 5 minutes"
+
+  - alert: HighDiskUsage
+    expr: (node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_free_bytes{mountpoint="/"}) / node_filesystem_size_bytes{mountpoint="/"} * 100 > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High disk usage on {{$labels.instance}}"
+      description: "Disk usage is above 80% on node {{$labels.instance}} for 5 minutes"
+
+- name: aws
+  rules:
+  - alert: HighEC2CPUUsage
+    expr: aws_ec2_cpuutilization_average > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High EC2 CPU usage on {{$labels.instance_id}}"
+      description: "EC2 CPU usage is above 80% on instance {{$labels.instance_id}} for 5 minutes"
+
+  - alert: HighRDSCPUUsage
+    expr: aws_rds_cpuutilization_average > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High RDS CPU usage on {{$labels.db_instance_identifier}}"
+      description: "RDS CPU usage is above 80% on instance {{$labels.db_instance_identifier}} for 5 minutes"
+
+  - alert: LowRDSFreeStorageSpace
+    expr: aws_rds_freestoragespace_average < 10737418240  # 10GB in bytes
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Low RDS free storage on {{$labels.db_instance_identifier}}"
+      description: "RDS free storage is below 10GB on instance {{$labels.db_instance_identifier}}"
