@@ -70,3 +70,7 @@ Then open your browser and navigate to http://localhost:3000
 - The default Grafana admin password is set to `admin` in the Terraform code. Change this for production use.
 - Update the Slack webhook URL in `alertmanager.yml` before deploying.
 - Make sure your AWS credentials have permissions to read CloudWatch metrics.
+
+
+## Direct me:
+- pooyan.azadparvar@gmail.com
